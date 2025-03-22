@@ -12,7 +12,7 @@ Future<dynamic> deviceBottomSheet(Device device) {
     isScrollControlled: true,
     SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(15.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -85,7 +85,7 @@ Future<dynamic> deviceBottomSheet(Device device) {
               ),
             const SizedBox(height: 5),
             SizedBox(
-              height: 150,
+              height: 200,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: GoogleMap(
@@ -106,9 +106,9 @@ Future<dynamic> deviceBottomSheet(Device device) {
                     ),
                   },
                   zoomGesturesEnabled: true,
-                  scrollGesturesEnabled: false,
-                  tiltGesturesEnabled: false,
-                  rotateGesturesEnabled: false,
+                  scrollGesturesEnabled: true,
+                  tiltGesturesEnabled: true,
+                  rotateGesturesEnabled: true,
                 ),
               ),
             ),
@@ -133,7 +133,6 @@ Container buildDeviceDetail({required String title, required String value}) {
       children: [
         Text(
           title,
-
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -141,9 +140,32 @@ Container buildDeviceDetail({required String title, required String value}) {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (title == 'Device Status')
+              CircleAvatar(
+                radius: 5,
+                backgroundColor:
+                    value == 'Online'
+                        ? Colors.green
+                        : value == 'Offline Short Term'
+                        ? Colors.yellow
+                        : Colors.red,
+              ),
+            const SizedBox(width: 5),
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Text(
+                title == 'Device Type' ? value.capitalize! : value,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
         ),
       ],
     ),

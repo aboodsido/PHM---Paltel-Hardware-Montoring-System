@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -36,12 +35,9 @@ class DashboardPage extends StatelessWidget {
     });
   }
 
-  /// Navigate to DevicesPage with an optional filter.
   void navigateToDevices(String? status) {
-    // Reset pagination and update the filter in the controller
     deviceController.currentPage.value = 1;
     deviceController.fetchDevicesAPI(status: status);
-    // Navigate and pass the filter argument.
     Get.toNamed(AppRoutes.DEVICES, arguments: {'status': status});
   }
 
@@ -49,7 +45,7 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     deviceController.fetchDeviceCountByStatus();
     userController.fetchUsers();
-    animateCards(); // Start animation when the widget builds
+    animateCards();
 
     return Scaffold(
       appBar: customAppBar(title: 'Dashboard'),

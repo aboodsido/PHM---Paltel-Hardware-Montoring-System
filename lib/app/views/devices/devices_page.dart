@@ -53,6 +53,9 @@ class _DevicesPageState extends State<DevicesPage> {
   void dispose() {
     deviceController.currentFilter.value = null;
     deviceController.currentSearchQuery.value = null;
+    // isOnlineSelected = false.obs;
+    // isOffLes24Selected = false.obs;
+    // isOffMore24Selected = false.obs;
     deviceController.refreshDevices();
     super.dispose();
   }
