@@ -9,7 +9,7 @@ import '../../services/list_shimmer_loading.dart';
 import '../../services/permission_manager.dart';
 import 'add_device_page.dart';
 import 'widgets/device_bottom_sheet_widget.dart';
-import 'widgets/device_counter_card.dart';
+import 'widgets/device_card_row.dart';
 import 'widgets/pagination_widget.dart';
 import 'widgets/search_bar_widget.dart';
 import 'widgets/trailing_actions_device.dart';
@@ -31,10 +31,6 @@ class _DevicesPageState extends State<DevicesPage> {
   final PermissionManager permissionManager = Get.find<PermissionManager>();
 
   String? status;
-
-  RxBool isOnlineSelected = false.obs;
-  RxBool isOffLes24Selected = false.obs;
-  RxBool isOffMore24Selected = false.obs;
 
   @override
   void initState() {
@@ -83,75 +79,7 @@ class _DevicesPageState extends State<DevicesPage> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-              child: Obx(
-                () => Row(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          if (isOnlineSelected.value) {
-                            isOnlineSelected.value = false;
-                            deviceController.fetchDevicesAPI(
-                              isRefreshing: true,
-                              status: "",
-                            );
-                          } else {
-                            isOnlineSelected.value = true;
-                            isOffLes24Selected.value = false;
-                            isOffMore24Selected.value = false;
-                            deviceController.fetchDevicesAPI(status: '1');
-                          }
-                        },
-                        child: buildCountCard(
-                          '${deviceController.onlineDeviceCount} ',
-                          Colors.green,
-                          isOnlineSelected.value,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          if (isOffLes24Selected.value) {
-                            isOffLes24Selected.value = false;
-                            deviceController.fetchDevicesAPI(status: "");
-                          } else {
-                            isOnlineSelected.value = false;
-                            isOffLes24Selected.value = true;
-                            isOffMore24Selected.value = false;
-                            deviceController.fetchDevicesAPI(status: '2');
-                          }
-                        },
-                        child: buildCountCard(
-                          '${deviceController.offlineShortDeviceCount} ',
-                          Colors.orangeAccent,
-                          isOffLes24Selected.value,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          if (isOffMore24Selected.value) {
-                            isOffMore24Selected.value = false;
-                            deviceController.fetchDevicesAPI(status: "");
-                          } else {
-                            isOnlineSelected.value = false;
-                            isOffLes24Selected.value = false;
-                            isOffMore24Selected.value = true;
-                            deviceController.fetchDevicesAPI(status: '3');
-                          }
-                        },
-                        child: buildCountCard(
-                          '${deviceController.offlineLongDeviceCount} ',
-                          Colors.red,
-                          isOffMore24Selected.value,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: Obx(() => buildCardRow()),
             ),
             const Padding(
               padding: EdgeInsets.only(left: 20),
