@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "802551043994",
+    "project_id": "paltel---hm",
+    "storage_bucket": "paltel---hm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:802551043994:android:a2f70e102493f915aa4c23",
+        "android_client_info": {
+          "package_name": "com.example.paltel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAx7Leo1F7c92IREGGp5-vcrjpKUCFv0LI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
