@@ -100,7 +100,7 @@ class FCMService {
       );
     }
 
-    Get.toNamed(AppRoutes.DEVICES, arguments: device);
+    Get.toNamed(AppRoutes.HOME, arguments: device);
   }
 
   Future<void> _handleMessageOpenedApp(RemoteMessage message) async {
@@ -111,6 +111,6 @@ class FCMService {
 
     final device = Device.fromJson(deviceData);
 
-    Get.toNamed(AppRoutes.DEVICES, arguments: device);
+    Get.toNamed(AppRoutes.HOME, arguments: device);
   }
 }
