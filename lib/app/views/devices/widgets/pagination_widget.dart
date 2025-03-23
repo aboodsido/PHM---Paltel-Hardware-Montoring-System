@@ -15,7 +15,8 @@ class paginationWidget extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child:
-            deviceController.lastPage.value == 1
+            deviceController.lastPage.value == 1 ||
+                    deviceController.lastPage.value == 0
                 ? Container()
                 : Row(
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -150,19 +150,22 @@ Container buildDeviceDetail({required String title, required String value}) {
                     value == 'Online'
                         ? Colors.green
                         : value == 'Offline Short Term'
-                        ? Colors.yellow
+                        ? Colors.orange
                         : Colors.red,
               ),
             const SizedBox(width: 5),
-            Padding(
-              padding: const EdgeInsets.only(top: 5),
-              child: Text(
-                title == 'Device Type' ? value.capitalize! : value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Text(
+                  title == 'Device Type' ? value.capitalize! : value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
           ],

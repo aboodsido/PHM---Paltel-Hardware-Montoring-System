@@ -137,7 +137,6 @@ class DeviceController extends GetxController {
       String? authToken = await storage.read(key: 'auth_token');
 
       if (authToken == null) {
-        // Get.snackbar("Error", "No token found, please login again");
         return;
       }
 
@@ -153,15 +152,12 @@ class DeviceController extends GetxController {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
 
-        // Extract device counts from the API response
         onlineDeviceCount.value = jsonData['data']['online_count'] ?? 0;
         offlineShortDeviceCount.value =
             jsonData['data']['offline_short_term_count'] ?? 0;
         offlineLongDeviceCount.value =
             jsonData['data']['offline_long_term_count'] ?? 0;
-        totalDeviceCount.value =
-            jsonData['data']['total_count'] ??
-            0; // Added a variable for total devices if needed
+        totalDeviceCount.value = jsonData['data']['total_count'] ?? 0;
       } else {
         Get.snackbar("Error", "Failed to fetch device statistics");
       }
@@ -204,7 +200,6 @@ class DeviceController extends GetxController {
     }
   }
 
-  // New updateDevice function
   Future<void> updateDevice(
     String deviceId,
     Map<String, dynamic> updatedDeviceData,

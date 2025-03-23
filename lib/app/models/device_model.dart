@@ -27,17 +27,17 @@ class Device {
 
   factory Device.fromJson(Map<String, dynamic> json) {
     return Device(
-      id: json['id'],
-      name: json['name'],
-      ipAddress: json['ip_address'],
-      lineCode: json['line_code'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      deviceType: json['device_type'],
-      status: json['status'],
-      responseTime: json['response_time'],
-      offlineSince: json['offline_since'] ?? "N/A",
-      downtime: json['downtime'] ?? "-",
+      id: int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      name: json['name']?.toString() ?? 'Unknown',
+      ipAddress: json['ip_address']?.toString() ?? 'N/A',
+      lineCode: json['line_code']?.toString() ?? 'N/A',
+      latitude: json['latitude']?.toString() ?? '0.0',
+      longitude: json['longitude']?.toString() ?? '0.0',
+      deviceType: json['device_type']?.toString() ?? 'N/A',
+      status: json['status']?.toString() ?? '0',
+      responseTime: json['response_time']?.toString() ?? 'N/A',
+      offlineSince: json['offline_since']?.toString() ?? 'N/A',
+      downtime: json['downtime']?.toString() ?? 'N/A',
     );
   }
 

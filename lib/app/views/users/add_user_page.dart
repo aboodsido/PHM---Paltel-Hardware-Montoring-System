@@ -34,7 +34,7 @@ class _AddUserPageState extends State<AddUserPage> {
     'personalEmail': TextEditingController(),
     'companyEmail': TextEditingController(),
     'phone': TextEditingController(),
-    'emailFrequency': TextEditingController(),
+    'emailFrequency': TextEditingController(text: '4'),
     'address': TextEditingController(),
   };
 
@@ -48,6 +48,15 @@ class _AddUserPageState extends State<AddUserPage> {
   bool isLoadingRoles = true;
 
   final storage = const FlutterSecureStorage();
+
+  final Map<String, String?> errors = {
+    'firstName': null,
+    'lastName': null,
+    'personalEmail': null,
+    'companyEmail': null,
+    'emailFrequency': null,
+    'role': null,
+  };
 
   @override
   void initState() {
@@ -66,9 +75,7 @@ class _AddUserPageState extends State<AddUserPage> {
 
       final response = await http.get(
         Uri.parse('$baseUrl/roles/list'),
-        headers: {
-          "Authorization": "Bearer $authToken",
-        },
+        headers: {"Authorization": "Bearer $authToken"},
       );
 
       if (response.statusCode == 200) {
@@ -76,9 +83,10 @@ class _AddUserPageState extends State<AddUserPage> {
         final rolesData = responseBody['data']['data'] as List;
 
         setState(() {
-          roles = rolesData
-              .map((role) => {"id": role['id'], "name": role['name']})
-              .toList();
+          roles =
+              rolesData
+                  .map((role) => {"id": role['id'], "name": role['name']})
+                  .toList();
           isLoadingRoles = false;
         });
       } else {
@@ -122,16 +130,23 @@ class _AddUserPageState extends State<AddUserPage> {
             children: [
               _buildImagePicker(),
               const SizedBox(height: 20),
-              _buildInput("First Name", 'firstName', TextInputType.text),
+              _buildInput("First Name *", 'firstName', TextInputType.text),
               _buildInput("Middle Name", 'middleName', TextInputType.text),
-              _buildInput("Last Name", 'lastName', TextInputType.text),
-              _buildInput("Personal Email", 'personalEmail',
-                  TextInputType.emailAddress),
+              _buildInput("Last Name *", 'lastName', TextInputType.text),
               _buildInput(
-                  "Company Email", 'companyEmail', TextInputType.emailAddress),
+                "Personal Email *",
+                'personalEmail',
+                TextInputType.emailAddress,
+              ),
+              _buildInput(
+                "Company Email *",
+                'companyEmail',
+                TextInputType.emailAddress,
+              ),
               _buildInput("Phone Number", 'phone', TextInputType.number),
-              _buildDropdown("Select Marital Status", ["Single", "Married"],
-                  (value) {
+              _buildDropdown("Select Marital Status", ["Single", "Married"], (
+                value,
+              ) {
                 setState(() {
                   selectedMaritalStatus = value;
                 });
@@ -142,8 +157,11 @@ class _AddUserPageState extends State<AddUserPage> {
                   selectedReceiveEmails = value;
                 });
               }, selectedReceiveEmails),
-              _buildInput("Email Frequency (Hours)", 'emailFrequency',
-                  TextInputType.number),
+              _buildInput(
+                "Email Frequency (Hours) *",
+                'emailFrequency',
+                TextInputType.number,
+              ),
               _buildInput("Address", 'address', TextInputType.streetAddress),
               const SizedBox(height: 20),
               _buildSubmitButton(),
@@ -156,7 +174,10 @@ class _AddUserPageState extends State<AddUserPage> {
   }
 
   Widget _buildInput(
-      String label, String controllerKey, TextInputType inputType) {
+    String label,
+    String controllerKey,
+    TextInputType inputType,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -164,25 +185,42 @@ class _AddUserPageState extends State<AddUserPage> {
         TextField(
           controller: controllers[controllerKey],
           keyboardType: inputType,
-          decoration: _inputDecoration(),
+          decoration: _inputDecoration().copyWith(
+            errorText: errors[controllerKey],
+          ),
+          onChanged: (value) {
+            setState(() {
+              errors[controllerKey] =
+                  value.isEmpty ? "$label is required" : null;
+            });
+          },
         ),
         const SizedBox(height: 15),
       ],
     );
   }
 
-  Widget _buildDropdown(String label, List<dynamic> items,
-      Function(dynamic) onChanged, dynamic value) {
+  Widget _buildDropdown(
+    String label,
+    List<dynamic> items,
+    Function(dynamic) onChanged,
+    dynamic value,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildLabel(label),
         DropdownButtonFormField<dynamic>(
           value: value,
-          items: items
-              .map((item) =>
-                  DropdownMenuItem(value: item, child: Text(item.toString())))
-              .toList(),
+          items:
+              items
+                  .map(
+                    (item) => DropdownMenuItem(
+                      value: item,
+                      child: Text(item.toString()),
+                    ),
+                  )
+                  .toList(),
           onChanged: onChanged,
           decoration: _inputDecoration(),
         ),
@@ -195,19 +233,27 @@ class _AddUserPageState extends State<AddUserPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLabel("Select Role"),
+        _buildLabel("Select Role *"),
         DropdownButtonFormField<dynamic>(
           value: selectedRoleId,
-          items: roles
-              .map((role) => DropdownMenuItem(
-                  value: role['id'], child: Text(role['name'])))
-              .toList(),
+          items:
+              roles
+                  .map(
+                    (role) => DropdownMenuItem(
+                      value: role['id'],
+                      child: Text(role['name']),
+                    ),
+                  )
+                  .toList(),
           onChanged: (value) {
             setState(() {
               selectedRoleId = value;
+              errors['role'] = null; // Clear error when selected
             });
           },
-          decoration: _inputDecoration(),
+          decoration: _inputDecoration().copyWith(
+            errorText: errors['role'], // Show error if role is not selected
+          ),
         ),
         const SizedBox(height: 15),
       ],
@@ -226,8 +272,9 @@ class _AddUserPageState extends State<AddUserPage> {
       filled: true,
       fillColor: Color.fromRGBO(232, 240, 254, 1),
       border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          borderSide: BorderSide.none),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderSide: BorderSide.none,
+      ),
     );
   }
 
@@ -240,9 +287,10 @@ class _AddUserPageState extends State<AddUserPage> {
           backgroundColor: Colors.grey[300],
           backgroundImage:
               selectedImage != null ? FileImage(selectedImage!) : null,
-          child: selectedImage == null
-              ? const Icon(Icons.add_a_photo, color: Colors.white, size: 30)
-              : null,
+          child:
+              selectedImage == null
+                  ? const Icon(Icons.add_a_photo, color: Colors.white, size: 30)
+                  : null,
         ),
       ),
     );
@@ -275,24 +323,49 @@ class _AddUserPageState extends State<AddUserPage> {
             widget.onSave(userData);
             Get.back();
           } else {
-            Get.snackbar(
-                "Validation Error", "Please fill all fields correctly.");
+            // Get.snackbar(
+            //   "Validation Error",
+            //   "Please fill all fields correctly.",
+            // );
           }
         },
         child: Text(
           widget.buttonText,
-          style:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
   }
 
   bool _validateFields() {
-    return controllers.values
-            .every((controller) => controller.text.isNotEmpty) &&
-        selectedMaritalStatus != null &&
-        selectedRoleId != null &&
-        selectedReceiveEmails != null;
+    setState(() {
+      errors['firstName'] =
+          controllers['firstName']!.text.isEmpty
+              ? "First name is required"
+              : null;
+      errors['lastName'] =
+          controllers['lastName']!.text.isEmpty
+              ? "Last name is required"
+              : null;
+      errors['personalEmail'] =
+          controllers['personalEmail']!.text.isEmpty
+              ? "Personal email is required"
+              : null;
+      errors['companyEmail'] =
+          controllers['companyEmail']!.text.isEmpty
+              ? "Company email is required"
+              : null;
+      errors['emailFrequency'] =
+          controllers['emailFrequency']!.text.isEmpty
+              ? "Email frequency is required"
+              : null;
+      errors['role'] =
+          selectedRoleId == null ? "Role selection is required" : null;
+    });
+
+    return !errors.values.any((error) => error != null);
   }
 }

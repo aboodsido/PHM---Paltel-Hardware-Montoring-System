@@ -11,9 +11,7 @@ ListView listShimmerLoading(double hight) {
           child: ShimmerLoading.rectangular(
             height: hight,
             shapeBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                8,
-              ), // Optional: rounded corners
+              borderRadius: BorderRadius.circular(8),
             ),
           ),
         ),

@@ -3,18 +3,17 @@ import 'package:get/get.dart';
 
 import '../../controllers/device_controller.dart';
 import '../../controllers/user_controller.dart';
-import '../../routes/app_routes.dart';
 import '../../services/body_top_edge.dart';
 import '../../services/custom_appbar.dart';
 import 'dashboard_card.dart';
 
 class DashboardPage extends StatelessWidget {
-  DashboardPage({super.key});
+  final TabController tabController;
+  DashboardPage({super.key, required this.tabController});
 
   final DeviceController deviceController = Get.find();
   final UserController userController = Get.find();
 
-  // Reactive list to control the visibility of each card
   final RxList<bool> cardVisibility = [false, false, false, false, false].obs;
 
   void animateCards() {
@@ -38,7 +37,8 @@ class DashboardPage extends StatelessWidget {
   void navigateToDevices(String? status) {
     deviceController.currentPage.value = 1;
     deviceController.fetchDevicesAPI(status: status);
-    Get.toNamed(AppRoutes.DEVICES, arguments: {'status': status});
+    tabController.animateTo(3);
+    // Get.toNamed(AppRoutes.DEVICES, arguments: {'status': status});
   }
 
   @override
@@ -68,7 +68,7 @@ class DashboardPage extends StatelessWidget {
                     duration: const Duration(milliseconds: 500),
                     child: GestureDetector(
                       onTap: () {
-                        Get.toNamed(AppRoutes.USERS);
+                        tabController.animateTo(1);
                       },
                       child: buildCard(
                         title: "USERS",

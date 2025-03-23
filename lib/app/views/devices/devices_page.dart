@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../constants.dart';
 import '../../controllers/device_controller.dart';
+import '../../models/device_model.dart';
 import '../../services/body_top_edge.dart';
 import '../../services/custom_appbar.dart';
 import '../../services/list_shimmer_loading.dart';
@@ -35,16 +36,22 @@ class _DevicesPageState extends State<DevicesPage> {
   @override
   void initState() {
     super.initState();
-    // Check if a status filter was passed via Get.arguments.
+
     final args = Get.arguments;
 
-    if (args != null && args['status'] != null) {
-      status = args['status'];
-    }
-    // If a status is provided, fetch with that filter; otherwise, fetch all devices.
-    if (status != null) {
-      deviceController.fetchDevicesAPI(status: status);
+    if (args is Map<String, dynamic>) {
+      // الحالة 1: تم تمرير status من الداشبورد
+      if (args.containsKey('status')) {
+        final status = args['status'];
+        deviceController.currentFilter.value = status;
+      }
+    } else if (args is Device) {
+      final device = args;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        deviceBottomSheet(device);
+      });
     } else {
+      // الحالة الافتراضية: جلب جميع الأجهزة
       deviceController.refreshDevices();
     }
   }
@@ -53,9 +60,7 @@ class _DevicesPageState extends State<DevicesPage> {
   void dispose() {
     deviceController.currentFilter.value = null;
     deviceController.currentSearchQuery.value = null;
-    // isOnlineSelected = false.obs;
-    // isOffLes24Selected = false.obs;
-    // isOffMore24Selected = false.obs;
+
     deviceController.refreshDevices();
     super.dispose();
   }

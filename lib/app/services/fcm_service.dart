@@ -1,9 +1,11 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 
+import '../models/device_model.dart';
 import '../routes/app_routes.dart';
 
 class FCMService {
@@ -67,6 +69,11 @@ class FCMService {
 
   Future<void> _handleMessage(RemoteMessage message) async {
     debugPrint("Received message: ${message.messageId}");
+    final deviceData = message.data;
+
+    final device = Device.fromJson(deviceData);
+    debugPrint('Notification caused app to open: ${message.data.toString()}');
+
     RemoteNotification? notification = message.notification;
 
     if (notification != null) {
@@ -78,6 +85,7 @@ class FCMService {
             channelDescription: 'Channel for FCM notifications',
             importance: Importance.max,
             priority: Priority.high,
+            icon: 'mipmap/launcher_icon',
           );
       const NotificationDetails notificationDetails = NotificationDetails(
         android: androidDetails,
@@ -89,13 +97,20 @@ class FCMService {
         notification.title,
         notification.body,
         notificationDetails,
-        payload: message.data.isNotEmpty ? message.data.toString() : null,
       );
     }
+
+    Get.toNamed(AppRoutes.DEVICES, arguments: device);
   }
 
   Future<void> _handleMessageOpenedApp(RemoteMessage message) async {
     debugPrint('Notification caused app to open: ${message.messageId}');
-    Get.toNamed(AppRoutes.DASHBOARD);
+    debugPrint('Notification caused app to open: ${message.data.toString()}');
+
+    final deviceData = message.data;
+
+    final device = Device.fromJson(deviceData);
+
+    Get.toNamed(AppRoutes.DEVICES, arguments: device);
   }
 }

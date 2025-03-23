@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage>
           controller: _tabController,
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            DashboardPage(),
+            DashboardPage(tabController: _tabController),
             const UsersPage(),
             const MapPage(),
             DevicesPage(),

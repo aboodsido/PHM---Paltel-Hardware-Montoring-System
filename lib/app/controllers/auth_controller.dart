@@ -52,30 +52,7 @@ class AuthController extends GetxController {
             Get.find<PermissionManager>().setPermissions(permissions);
 
             // Optionally, store other user information if needed
-            await storage.write(
-              key: 'user_id',
-              value: data['data']['user']?['id']?.toString() ?? '',
-            );
-            await storage.write(
-              key: 'user_email',
-              value: data['data']['user']?['company_email'] ?? '',
-            );
-            await storage.write(
-              key: 'first_name',
-              value: data['data']['user']?['first_name'] ?? '',
-            );
-            await storage.write(
-              key: 'middle_name',
-              value: data['data']['user']?['middle_name'] ?? '',
-            );
-            await storage.write(
-              key: 'last_name',
-              value: data['data']['user']?['last_name'] ?? '',
-            );
-            await storage.write(
-              key: 'user_image',
-              value: data['data']['user']?['image'] ?? '',
-            );
+            await writeUserData(data);
 
             // Navigate to the home screen after successful login
             Get.offNamed('/home');
@@ -113,6 +90,33 @@ class AuthController extends GetxController {
         icon: const Icon(Icons.warning, color: Colors.red),
       );
     }
+  }
+
+  Future<void> writeUserData(data) async {
+     await storage.write(
+      key: 'user_id',
+      value: data['data']['user']?['id']?.toString() ?? '',
+    );
+    await storage.write(
+      key: 'user_email',
+      value: data['data']['user']?['company_email'] ?? '',
+    );
+    await storage.write(
+      key: 'first_name',
+      value: data['data']['user']?['first_name'] ?? '',
+    );
+    await storage.write(
+      key: 'middle_name',
+      value: data['data']['user']?['middle_name'] ?? '',
+    );
+    await storage.write(
+      key: 'last_name',
+      value: data['data']['user']?['last_name'] ?? '',
+    );
+    await storage.write(
+      key: 'user_image',
+      value: data['data']['user']?['image'] ?? '',
+    );
   }
 
   // Logout method

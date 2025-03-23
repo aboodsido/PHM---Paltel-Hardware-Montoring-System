@@ -25,9 +25,7 @@ class UsersPage extends StatelessWidget {
       UserController userController,
       UserModel user,
     ) async {
-      String? loggedInUserId = await storage.read(
-        key: 'user_id',
-      ); // Retrieve the logged-in user ID
+      String? loggedInUserId = await storage.read(key: 'user_id');
 
       return Get.dialog(
         AlertDialog(
@@ -64,7 +62,6 @@ class UsersPage extends StatelessWidget {
       );
     }
 
-    // Fetch the users when the page is first built
     userController.fetchUsers();
 
     return Scaffold(
@@ -75,7 +72,6 @@ class UsersPage extends StatelessWidget {
           if (userController.isLoading.value) {
             return listShimmerLoading(100);
           }
-
           return Padding(
             padding: const EdgeInsets.only(top: 10),
             child: ListView.builder(
@@ -147,7 +143,6 @@ class UsersPage extends StatelessWidget {
                                 ),
                                 child: IconButton(
                                   onPressed: () async {
-                                    // Navigate to the UpdateUserPage
                                     final userData = {
                                       "id": user.id,
                                       "first_name": user.firstName,
