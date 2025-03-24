@@ -79,9 +79,13 @@ class _DevicesPageState extends State<DevicesPage> {
               child: SearchBarWidget(
                 searchController: searchController,
                 searchQuery: searchQuery,
-                onChanged: (query) {
+                onSubmitted: (query) {
                   searchQuery.value = query.toLowerCase();
-                  deviceController.fetchDevicesAPI(searchQuery: query);
+                  if (searchQuery.value.isNotEmpty) {
+                    deviceController.fetchDevicesAPI(searchQuery: query);
+                  } else {
+                    return;
+                  }
                 },
               ),
             ),

@@ -8,12 +8,12 @@ class SearchBarWidget extends StatelessWidget {
     super.key,
     required this.searchController,
     required this.searchQuery,
-    required this.onChanged,
+    required this.onSubmitted,
   });
 
   final TextEditingController searchController;
   final RxString searchQuery;
-  final Function(String)? onChanged;
+  final Function(String)? onSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,8 @@ class SearchBarWidget extends StatelessWidget {
         filled: true,
         fillColor: Colors.white,
       ),
-      onChanged: onChanged,
+      onSubmitted: onSubmitted,
+      textInputAction: TextInputAction.search,
     );
   }
 }

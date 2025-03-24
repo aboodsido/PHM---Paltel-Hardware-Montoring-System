@@ -187,6 +187,11 @@ class _AddUserPageState extends State<AddUserPage> {
           keyboardType: inputType,
           decoration: _inputDecoration().copyWith(
             errorText: errors[controllerKey],
+            errorStyle: const TextStyle(fontSize: 14),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.red),
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
           onChanged: (value) {
             setState(() {
@@ -252,7 +257,12 @@ class _AddUserPageState extends State<AddUserPage> {
             });
           },
           decoration: _inputDecoration().copyWith(
-            errorText: errors['role'], // Show error if role is not selected
+            errorText: errors['role'],
+            errorStyle: const TextStyle(fontSize: 14),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.red),
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         ),
         const SizedBox(height: 15),

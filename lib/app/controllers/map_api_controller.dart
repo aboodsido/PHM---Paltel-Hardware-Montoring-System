@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 
 import '../constants.dart';
 import '../models/map_devices_model.dart';
+import '../views/devices/widgets/device_bottom_sheet_widget.dart';
 import 'map_settings_controller.dart';
 
 class MapApiController extends GetxController {
@@ -23,30 +24,34 @@ class MapApiController extends GetxController {
 
   Map<String, BitmapDescriptor> markerIcons = {};
 
- Future<BitmapDescriptor> getResizedMarker(String assetPath, int targetWidth) async {
-  try {
-    debugPrint("Loading marker: $assetPath");
+  Future<BitmapDescriptor> getResizedMarker(
+    String assetPath,
+    int targetWidth,
+  ) async {
+    try {
+      debugPrint("Loading marker: $assetPath");
 
-    ByteData data = await rootBundle.load(assetPath);
-    Uint8List bytes = data.buffer.asUint8List();
+      ByteData data = await rootBundle.load(assetPath);
+      Uint8List bytes = data.buffer.asUint8List();
 
-    ui.Codec codec = await ui.instantiateImageCodec(
-      bytes,
-      targetWidth: targetWidth,
-    );
-    ui.FrameInfo frameInfo = await codec.getNextFrame();
+      ui.Codec codec = await ui.instantiateImageCodec(
+        bytes,
+        targetWidth: targetWidth,
+      );
+      ui.FrameInfo frameInfo = await codec.getNextFrame();
 
-    ByteData? byteData = await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
-    Uint8List resizedBytes = byteData!.buffer.asUint8List();
+      ByteData? byteData = await frameInfo.image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+      Uint8List resizedBytes = byteData!.buffer.asUint8List();
 
-    debugPrint("Successfully loaded marker: $assetPath");
-    return BitmapDescriptor.fromBytes(resizedBytes);
-  } catch (e) {
-    debugPrint("Error loading marker $assetPath: $e");
-    return BitmapDescriptor.defaultMarker;
+      debugPrint("Successfully loaded marker: $assetPath");
+      return BitmapDescriptor.fromBytes(resizedBytes);
+    } catch (e) {
+      debugPrint("Error loading marker $assetPath: $e");
+      return BitmapDescriptor.defaultMarker;
+    }
   }
-}
-
 
   Future<void> loadCustomIcons() async {
     markerIcons["1"] = //online
@@ -115,7 +120,6 @@ class MapApiController extends GetxController {
     markers.clear();
     String selectedStatus = mapSettingsController.deviceStatus.value;
     for (var device in devices) {
-      // If the selected status is not "all", only add devices with matching status.
       if (selectedStatus != 'all' && device.status != selectedStatus) {
         continue;
       }
@@ -132,7 +136,7 @@ class MapApiController extends GetxController {
             infoWindow: InfoWindow(
               title: device.name,
               snippet:
-                  '${device.deviceType} • ${device.status == "1"
+                  '${device.deviceType.capitalize} • ${device.status == "1"
                       ? 'Online'
                       : device.status == "2"
                       ? 'Offline (short term)'
