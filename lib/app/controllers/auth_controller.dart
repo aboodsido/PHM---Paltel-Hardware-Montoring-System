@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 import '../constants.dart';
+import '../services/device_utils.dart';
 import '../services/permission_manager.dart';
 
 class AuthController extends GetxController {
@@ -16,12 +17,15 @@ class AuthController extends GetxController {
   var loginIndicator = false.obs;
   final storage = const FlutterSecureStorage();
   final String loginUrl = '$baseUrl/auth/login';
+  final String logoutUrl = '$baseUrl/auth/logout';
 
   // Login method
   void login() async {
     if (email.isNotEmpty && password.isNotEmpty) {
       loginIndicator.value = true;
 
+      final String deviceId = await DeviceUtils.getDeviceId();
+      print("Device ID: $deviceId");
       String? fcmToken = await FirebaseMessaging.instance.getToken();
       debugPrint("FCM Token: $fcmToken");
 
@@ -29,35 +33,33 @@ class AuthController extends GetxController {
         'email': email.value,
         'password': password.value,
         'fcm_token': fcmToken ?? '',
+        'device_id': deviceId,
       };
 
       try {
         var response = await http.post(Uri.parse(loginUrl), body: body);
 
+        // print("Response Status Code: ${response.statusCode}");
+        // print("Response Body: ${response.body}");
+
         if (response.body.isNotEmpty) {
           var data = json.decode(response.body);
 
           if (response.statusCode == 200 && data['data'] != null) {
-            // Extract the token from the response
             String token = data['data']['token'] ?? '';
 
-            // Store the token securely
             await storage.write(key: 'auth_token', value: token);
 
             final permissions = List<String>.from(
               data['data']['permissions'] ?? [],
             );
 
-            // Save permissions in the manager
             Get.find<PermissionManager>().setPermissions(permissions);
 
-            // Optionally, store other user information if needed
             await writeUserData(data);
 
-            // Navigate to the home screen after successful login
             Get.offNamed('/home');
           } else {
-            // Extract error message safely
             String errorMessage =
                 data['message'] ?? 'Login failed. Please try again.';
 
@@ -75,6 +77,7 @@ class AuthController extends GetxController {
           );
         }
       } catch (e) {
+        print(e);
         Get.snackbar(
           'Error',
           'An unexpected error occurred: $e',
@@ -93,7 +96,7 @@ class AuthController extends GetxController {
   }
 
   Future<void> writeUserData(data) async {
-     await storage.write(
+    await storage.write(
       key: 'user_id',
       value: data['data']['user']?['id']?.toString() ?? '',
     );
@@ -135,12 +138,41 @@ class AuthController extends GetxController {
           ),
           TextButton(
             onPressed: () async {
-              // Clear stored token and user data
-              await storage.deleteAll();
-              Get.find<PermissionManager>().clearPermissions();
-              Get.offAllNamed('/login');
+              final deviceId = await DeviceUtils.getDeviceId();
+              print(deviceId);
+              try {
+                var response = await http.post(
+                  Uri.parse(logoutUrl),
+                  body: {'device_id': deviceId},
+                  headers: {
+                    "Authorization":
+                        "Bearer ${await storage.read(key: 'auth_token')}",
+                  },
+                );
 
-              Get.back();
+                if (response.statusCode == 200) {
+                  print(response.statusCode);
+                  print(response.body);
+                  await storage.deleteAll();
+                  Get.find<PermissionManager>().clearPermissions();
+                  Get.offAllNamed('/login');
+                  Get.back();
+                } else {
+                  print(response.statusCode);
+                  print(response.body);
+                  Get.snackbar(
+                    'Error',
+                    'Failed to logout: ${response.statusCode}',
+                    icon: const Icon(Icons.error, color: Colors.red),
+                  );
+                }
+              } catch (e) {
+                Get.snackbar(
+                  'Error',
+                  'An error occurred: $e',
+                  icon: const Icon(Icons.error, color: Colors.red),
+                );
+              }
             },
             child: const Text(
               "Logout",

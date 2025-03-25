@@ -12,8 +12,6 @@ class SplashPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-
     return FutureBuilder<bool>(
       future: storage.containsKey(key: 'auth_token'),
       builder: (context, snapshot) {
@@ -32,7 +30,6 @@ class SplashPage extends StatelessWidget {
           );
         }
 
-        // If there's an error or no token, navigate to the login screen
         if (snapshot.hasError || !snapshot.hasData || !snapshot.data!) {
           Future.delayed(const Duration(seconds: 4), () {
             Get.offNamed(AppRoutes.LOGIN);
@@ -59,7 +56,6 @@ class SplashPage extends StatelessWidget {
           );
         }
 
-        // If the token exists, navigate to home screen
         Future.delayed(const Duration(seconds: 4), () {
           Get.offNamed(AppRoutes.HOME);
         });
@@ -79,10 +75,7 @@ class SplashPage extends StatelessWidget {
                 ),
               ),
               const Center(
-                child: Text(
-                  'Welcome Again!', // Display Welcome Again if token exists
-                  style: TextStyle(fontSize: 20),
-                ),
+                child: Text('Welcome Again!', style: TextStyle(fontSize: 20)),
               ),
             ],
           ),

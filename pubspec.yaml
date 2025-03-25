@@ -46,6 +46,7 @@ dependencies:
   lottie: ^3.2.0
   shared_preferences: ^2.0.15
   shimmer: ^3.0.0
+  uuid: ^4.5.1
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -57,12 +58,6 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/images/blue-icon.png" # For adaptive icons on Android
 
 dev_dependencies:
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter

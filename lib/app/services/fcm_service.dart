@@ -24,6 +24,10 @@ class FCMService {
 
     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
 
+    // FirebaseMessaging.onBackgroundMessage(_handleMessageOpenedApp);
+
+  
+
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
       debugPrint("Refreshed token: $newToken");
     });
@@ -69,10 +73,9 @@ class FCMService {
 
   Future<void> _handleMessage(RemoteMessage message) async {
     debugPrint("Received message: ${message.messageId}");
-    final deviceData = message.data;
 
-    final device = Device.fromJson(deviceData);
-    debugPrint('Notification caused app to open: ${message.data.toString()}');
+    debugPrint('محتوى الرسالة: ${message.data.toString()}');
+    final deviceData = message.data;
 
     RemoteNotification? notification = message.notification;
 
@@ -100,17 +103,24 @@ class FCMService {
       );
     }
 
-    Get.toNamed(AppRoutes.HOME, arguments: device);
+    if (deviceData.isNotEmpty) {
+      final device = Device.fromJson(deviceData);
+      Get.toNamed(AppRoutes.DEVICES, arguments: device);
+    } else {
+      return;
+    }
   }
 
   Future<void> _handleMessageOpenedApp(RemoteMessage message) async {
     debugPrint('Notification caused app to open: ${message.messageId}');
-    debugPrint('Notification caused app to open: ${message.data.toString()}');
+    debugPrint('محتوى الرسالة: ${message.data.toString()}');
 
     final deviceData = message.data;
-
-    final device = Device.fromJson(deviceData);
-
-    Get.toNamed(AppRoutes.HOME, arguments: device);
+    if (deviceData.isNotEmpty) {
+      final device = Device.fromJson(deviceData);
+      Get.toNamed(AppRoutes.DEVICES, arguments: device);
+    } else {
+      return;
+    }
   }
 }

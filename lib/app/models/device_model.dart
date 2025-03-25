@@ -27,7 +27,7 @@ class Device {
 
   factory Device.fromJson(Map<String, dynamic> json) {
     return Device(
-      id: int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      id: int.tryParse(json['device_id']?.toString() ?? '0') ?? 0,
       name: json['name']?.toString() ?? 'Unknown',
       ipAddress: json['ip_address']?.toString() ?? 'N/A',
       lineCode: json['line_code']?.toString() ?? 'N/A',
