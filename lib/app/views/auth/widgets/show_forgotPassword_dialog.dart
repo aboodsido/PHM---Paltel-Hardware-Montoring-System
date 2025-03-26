@@ -9,9 +9,10 @@ void showForgotPasswordDialog() {
 
   Get.dialog(
     AlertDialog(
+      backgroundColor: Colors.white,
       title: const Text("Enter your email to reset the password"),
       content: TextField(
-        onChanged: (value) => controller.email.value = value,
+        onChanged: (value) => controller.forgetPassEmail.value = value,
         decoration: const InputDecoration(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -24,13 +25,20 @@ void showForgotPasswordDialog() {
         keyboardType: TextInputType.emailAddress,
       ),
       actions: [
-        TextButton(onPressed: () => Get.back(), child: const Text("Cancel")),
+        TextButton(
+          onPressed: () {
+            controller.forgetPassEmail.value = '';
+            Get.back();
+          },
+          child: const Text("Cancel"),
+        ),
         TextButton(
           style: const ButtonStyle(
             foregroundColor: WidgetStatePropertyAll(primaryColr),
           ),
           onPressed: () {
-            if (controller.email.value.isEmpty) {
+            print(controller.forgetPassEmail.value);
+            if (controller.forgetPassEmail.value.isEmpty) {
               Get.snackbar(
                 'Error',
                 'Please enter your email',
@@ -38,7 +46,7 @@ void showForgotPasswordDialog() {
               );
             } else if (!RegExp(
               r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-            ).hasMatch(controller.email.value)) {
+            ).hasMatch(controller.forgetPassEmail.value)) {
               Get.snackbar(
                 'Error',
                 'Please enter a valid email address',
@@ -46,6 +54,7 @@ void showForgotPasswordDialog() {
               );
             } else {
               controller.forgetPassword();
+              controller.forgetPassEmail.value = '';
               Get.back();
             }
           },

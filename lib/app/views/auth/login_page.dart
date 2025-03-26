@@ -35,7 +35,7 @@ class LoginPage extends StatelessWidget {
                           height: 250,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 30),
                       ShaderMask(
                         shaderCallback:
                             (bounds) => LinearGradient(

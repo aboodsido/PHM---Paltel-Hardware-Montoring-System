@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,6 +8,20 @@ import 'package:get/get.dart';
 
 import '../models/device_model.dart';
 import '../routes/app_routes.dart';
+
+@pragma('vm:entry-point')
+void onBackgroundNotificationTap(NotificationResponse response) async {
+  String? payload = response.payload;
+
+  if (payload != null && payload.isNotEmpty) {
+    final deviceData = jsonDecode(payload);
+    final device = Device.fromJson(deviceData);
+
+    Future.delayed(Duration.zero, () {
+      Get.toNamed(AppRoutes.DEVICES, arguments: device);
+    });
+  }
+}
 
 class FCMService {
   static final FCMService _instance = FCMService._internal();
@@ -23,10 +38,6 @@ class FCMService {
     FirebaseMessaging.onMessage.listen(_handleMessage);
 
     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
-
-    // FirebaseMessaging.onBackgroundMessage(_handleMessageOpenedApp);
-
-  
 
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
       debugPrint("Refreshed token: $newToken");
@@ -53,7 +64,15 @@ class FCMService {
       settings,
       onDidReceiveNotificationResponse: (NotificationResponse response) async {
         String? payload = response.payload;
+
+        if (payload != null && payload.isNotEmpty) {
+          final deviceData = jsonDecode(payload);
+          final device = Device.fromJson(deviceData);
+
+          Get.toNamed(AppRoutes.DEVICES, arguments: device);
+        }
       },
+      onDidReceiveBackgroundNotificationResponse: onBackgroundNotificationTap,
     );
   }
 
@@ -81,6 +100,9 @@ class FCMService {
 
     if (notification != null) {
       final int id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+      final payload = deviceData.isNotEmpty ? jsonEncode(deviceData) : null;
+
       const AndroidNotificationDetails androidDetails =
           AndroidNotificationDetails(
             'fcm_channel_id',
@@ -100,14 +122,8 @@ class FCMService {
         notification.title,
         notification.body,
         notificationDetails,
+        payload: payload,
       );
-    }
-
-    if (deviceData.isNotEmpty) {
-      final device = Device.fromJson(deviceData);
-      Get.toNamed(AppRoutes.DEVICES, arguments: device);
-    } else {
-      return;
     }
   }
 

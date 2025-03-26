@@ -13,6 +13,7 @@ import '../services/permission_manager.dart';
 
 class AuthController extends GetxController {
   var email = ''.obs;
+  var forgetPassEmail = ''.obs;
   var password = ''.obs;
   var loginIndicator = false.obs;
   final storage = const FlutterSecureStorage();
@@ -38,9 +39,6 @@ class AuthController extends GetxController {
 
       try {
         var response = await http.post(Uri.parse(loginUrl), body: body);
-
-        // print("Response Status Code: ${response.statusCode}");
-        // print("Response Body: ${response.body}");
 
         if (response.body.isNotEmpty) {
           var data = json.decode(response.body);
@@ -188,7 +186,7 @@ class AuthController extends GetxController {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/forget-password'),
-        body: {'email': email.value},
+        body: {'email': forgetPassEmail.value},
       );
       if (response.statusCode == 200) {
         Get.snackbar(
@@ -197,6 +195,8 @@ class AuthController extends GetxController {
           icon: const Icon(Icons.check_circle, color: Colors.green),
         );
       } else {
+        print(response.statusCode);
+        print(response.body);
         Get.snackbar(
           'Error',
           'Failed to send new password: ${response.statusCode}',
