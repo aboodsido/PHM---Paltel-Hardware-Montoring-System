@@ -24,7 +24,7 @@ class EttisalatApp extends StatelessWidget {
     final themeController = Get.find<ThemeController>();
     return Obx(
       () => GetMaterialApp(
-        title: 'Ettisalat App',
+        title: 'Paltel - HM',
         theme: ThemeData(
           textTheme: GoogleFonts.tajawalTextTheme(),
           colorScheme: ColorScheme.fromSeed(

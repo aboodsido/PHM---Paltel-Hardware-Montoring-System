@@ -110,7 +110,14 @@ class MapApiController extends GetxController {
         Get.snackbar('Error', 'Server error: ${response.statusCode}');
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      if (e.toString().contains("SocketException")) {
+        Get.snackbar(
+          "No Internet",
+          "You are offline. Please check your connection.",
+        );
+      } else {
+        Get.snackbar("Error", "An error occurred: $e");
+      }
     } finally {
       isLoading.value = false;
     }

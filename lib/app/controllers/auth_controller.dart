@@ -75,12 +75,14 @@ class AuthController extends GetxController {
           );
         }
       } catch (e) {
-        print(e);
-        Get.snackbar(
-          'Error',
-          'An unexpected error occurred: $e',
-          icon: const Icon(Icons.error, color: Colors.red),
-        );
+        if (e.toString().contains("SocketException")) {
+          Get.snackbar(
+            "No Internet",
+            "You are offline. Please check your connection.",
+          );
+        } else {
+          Get.snackbar("Error", "An error occurred: $e");
+        }
       } finally {
         loginIndicator.value = false;
       }
@@ -165,11 +167,14 @@ class AuthController extends GetxController {
                   );
                 }
               } catch (e) {
-                Get.snackbar(
-                  'Error',
-                  'An error occurred: $e',
-                  icon: const Icon(Icons.error, color: Colors.red),
-                );
+                if (e.toString().contains("SocketException")) {
+                  Get.snackbar(
+                    "No Internet",
+                    "You are offline. Please check your connection.",
+                  );
+                } else {
+                  Get.snackbar("Error", "An error occurred: $e");
+                }
               }
             },
             child: const Text(

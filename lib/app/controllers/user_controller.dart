@@ -10,16 +10,16 @@ import '../models/profile_model.dart';
 import '../models/user_model.dart';
 
 class UserController extends GetxController {
-  var users = <UserModel>[].obs; // Reactive list for user data
+  var users = <UserModel>[].obs;
   var userProfile = Rxn<ProfileModel>();
-  var isLoading = false.obs; // Track loading state
+  var isLoading = false.obs;
   final storage = const FlutterSecureStorage();
 
-  // Fetch users from API
   Future<void> fetchUsers() async {
     try {
       String? authToken = await storage.read(
-          key: 'auth_token'); // Replace with your storage method
+        key: 'auth_token',
+      ); // Replace with your storage method
 
       if (authToken == null) {
         // Get.snackbar("Error", "No token found, please login again.");
@@ -30,9 +30,7 @@ class UserController extends GetxController {
 
       final response = await http.get(
         Uri.parse('$baseUrl/users/list'),
-        headers: {
-          "Authorization": "Bearer $authToken",
-        },
+        headers: {"Authorization": "Bearer $authToken"},
       );
 
       if (response.statusCode == 200) {
@@ -42,7 +40,21 @@ class UserController extends GetxController {
         Get.snackbar("Error", "Failed to load users");
       }
     } catch (e) {
-      Get.snackbar("Error", "An error occurred: $e");
+      if (e.toString().contains("SocketException")) {
+        Get.snackbar(
+          "No Internet",
+          "You are offline. Please check your connection.",
+        );
+      } else {
+        if (e.toString().contains("SocketException")) {
+          Get.snackbar(
+            "No Internet",
+            "You are offline. Please check your connection.",
+          );
+        } else {
+          Get.snackbar("Error", "An error occurred: $e");
+        }
+      }
     } finally {
       isLoading(false);
     }
@@ -60,9 +72,7 @@ class UserController extends GetxController {
 
       var uri = Uri.parse('$baseUrl/users/add');
       var request = http.MultipartRequest('POST', uri)
-        ..headers.addAll({
-          "Authorization": "Bearer $authToken",
-        });
+        ..headers.addAll({"Authorization": "Bearer $authToken"});
 
       request.fields['first_name'] = userData["first_name"];
       request.fields['middle_name'] = userData["middle_name"];
@@ -80,8 +90,9 @@ class UserController extends GetxController {
       if (userData["image"]?.isNotEmpty ?? false) {
         var imageFile = File(userData["image"]!);
 
-        request.files
-            .add(await http.MultipartFile.fromPath('file', imageFile.path));
+        request.files.add(
+          await http.MultipartFile.fromPath('file', imageFile.path),
+        );
       }
       var response = await request.send();
 
@@ -96,7 +107,14 @@ class UserController extends GetxController {
         Get.snackbar("Error", "Failed to add user: ${response.statusCode}");
       }
     } catch (e) {
-      Get.snackbar("Error", "An error occurred: $e");
+      if (e.toString().contains("SocketException")) {
+        Get.snackbar(
+          "No Internet",
+          "You are offline. Please check your connection.",
+        );
+      } else {
+        Get.snackbar("Error", "An error occurred: $e");
+      }
     }
   }
 
@@ -109,9 +127,7 @@ class UserController extends GetxController {
       }
       var uri = Uri.parse('$baseUrl/users/edit/$userId');
       var request = http.MultipartRequest('POST', uri)
-        ..headers.addAll({
-          "Authorization": "Bearer $authToken",
-        });
+        ..headers.addAll({"Authorization": "Bearer $authToken"});
 
       request.fields['first_name'] = userData["first_name"];
       request.fields['middle_name'] = userData["middle_name"];
@@ -121,8 +137,6 @@ class UserController extends GetxController {
       request.fields['phone'] = userData["phone"];
       request.fields['marital_status'] = userData["marital_status"] ?? "";
       request.fields['role_id'] = userData["role_id"].toString();
-      print(
-          "Converted receives_emails: ${userData["receives_emails"] == true ? "true" : "false"}");
 
       request.fields['receives_emails'] =
           userData["receives_emails"] == true ? '1' : '2';
@@ -135,23 +149,29 @@ class UserController extends GetxController {
       if (userData["image"] != null &&
           !userData["image"].toString().startsWith("http")) {
         var imageFile = File(userData["image"]);
-        request.files
-            .add(await http.MultipartFile.fromPath('file', imageFile.path));
+        request.files.add(
+          await http.MultipartFile.fromPath('file', imageFile.path),
+        );
       }
       var response = await request.send();
       final responseBody = await response.stream.bytesToString();
       final responseJson = json.decode(responseBody);
 
       if (response.statusCode == 200) {
-        print(responseJson['message']);
         Get.snackbar("Success", responseJson['message']);
         fetchUsers(); // Refresh the users list
       } else {
         Get.snackbar("Error", "Failed to update user: ${response.statusCode}");
       }
     } catch (e) {
-      print(e);
-      Get.snackbar("Error", "An error occurred: $e");
+      if (e.toString().contains("SocketException")) {
+        Get.snackbar(
+          "No Internet",
+          "You are offline. Please check your connection.",
+        );
+      } else {
+        Get.snackbar("Error", "An error occurred: $e");
+      }
     }
   }
 
@@ -159,6 +179,7 @@ class UserController extends GetxController {
   Future<void> deleteUser(int userId) async {
     try {
       String? authToken = await storage.read(key: 'auth_token');
+      String? loggedInUserId = await storage.read(key: 'user_id');
 
       if (authToken == null) {
         // Get.snackbar("Error", "No token found, please login again.");
@@ -167,9 +188,7 @@ class UserController extends GetxController {
 
       final response = await http.post(
         Uri.parse('$baseUrl/users/delete/$userId'),
-        headers: {
-          "Authorization": "Bearer $authToken",
-        },
+        headers: {"Authorization": "Bearer $authToken"},
       );
 
       final responseBody = json.decode(response.body);
@@ -177,14 +196,24 @@ class UserController extends GetxController {
 
       if (response.statusCode == 200) {
         Get.snackbar("Success", message);
-        fetchUsers(); // Refresh the users list after deletion
+        if (loggedInUserId == userId.toString()) {
+          await storage.deleteAll();
+          Get.offAllNamed('/login');
+        }
+        fetchUsers(); 
       } else {
         print(message);
         Get.snackbar("Error", message);
       }
     } catch (e) {
-      print(e.toString());
-      Get.snackbar("Error", "An error occurred: $e");
+      if (e.toString().contains("SocketException")) {
+        Get.snackbar(
+          "No Internet",
+          "You are offline. Please check your connection.",
+        );
+      } else {
+        Get.snackbar("Error", "An error occurred: $e");
+      }
     }
   }
 
@@ -202,9 +231,7 @@ class UserController extends GetxController {
 
       final response = await http.get(
         Uri.parse('$baseUrl/users/profile/$userId'),
-        headers: {
-          "Authorization": "Bearer $authToken",
-        },
+        headers: {"Authorization": "Bearer $authToken"},
       );
 
       final responseBody = json.decode(response.body);
@@ -212,13 +239,18 @@ class UserController extends GetxController {
 
       if (response.statusCode == 200) {
         userProfile.value = ProfileModel.fromJson(responseBody);
-        // Get.snackbar("Success", message);
       } else {
         Get.snackbar("Error", message);
       }
     } catch (e) {
-      print(e.toString());
-      Get.snackbar("Error", "An error occurred: $e");
+      if (e.toString().contains("SocketException")) {
+        Get.snackbar(
+          "No Internet",
+          "You are offline. Please check your connection.",
+        );
+      } else {
+        Get.snackbar("Error", "An error occurred: $e");
+      }
     } finally {
       isLoading(false);
     }

@@ -25,8 +25,6 @@ class UsersPage extends StatelessWidget {
       UserController userController,
       UserModel user,
     ) async {
-      String? loggedInUserId = await storage.read(key: 'user_id');
-
       return Get.dialog(
         AlertDialog(
           title: const Text("Delete Confirmation"),
@@ -42,11 +40,6 @@ class UsersPage extends StatelessWidget {
               onPressed: () async {
                 Get.back();
                 await userController.deleteUser(user.id);
-                // Check if the deleted user is the logged-in user
-                if (loggedInUserId == user.id.toString()) {
-                  await storage.deleteAll();
-                  Get.offAllNamed('/login');
-                }
               },
               child: const Text(
                 "Delete",

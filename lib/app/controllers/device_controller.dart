@@ -96,7 +96,14 @@ class DeviceController extends GetxController {
         Get.snackbar("Error", "Failed to fetch devices");
       }
     } catch (e) {
-      Get.snackbar("Error", "An error occurred: $e");
+      if (e.toString().contains("SocketException")) {
+        Get.snackbar(
+          "No Internet",
+          "You are offline. Please check your connection.",
+        );
+      } else {
+        Get.snackbar("Error", "An error occurred: $e");
+      }
     } finally {
       isLoading.value = false;
     }
@@ -162,7 +169,14 @@ class DeviceController extends GetxController {
         Get.snackbar("Error", "Failed to fetch device statistics");
       }
     } catch (e) {
-      Get.snackbar("Error", "An error occurred: $e");
+      if (e.toString().contains("SocketException")) {
+        Get.snackbar(
+          "No Internet",
+          "You are offline. Please check your connection.",
+        );
+      } else {
+        Get.snackbar("Error", "An error occurred: $e");
+      }
     }
   }
 
@@ -192,11 +206,16 @@ class DeviceController extends GetxController {
         } else {
           Get.snackbar("Error", "Failed to add device.");
         }
-      } else {
-        // Get.snackbar("Error", "No token found, please login again.");
-      }
+      } else {}
     } catch (e) {
-      Get.snackbar("Error", "An error occurred: $e");
+      if (e.toString().contains("SocketException")) {
+        Get.snackbar(
+          "No Internet",
+          "You are offline. Please check your connection.",
+        );
+      } else {
+        Get.snackbar("Error", "An error occurred: $e");
+      }
     }
   }
 
@@ -229,7 +248,14 @@ class DeviceController extends GetxController {
         // Get.snackbar("Error", "No token found, please login again");
       }
     } catch (e) {
-      Get.snackbar("Error", e.toString());
+      if (e.toString().contains("SocketException")) {
+        Get.snackbar(
+          "No Internet",
+          "You are offline. Please check your connection.",
+        );
+      } else {
+        Get.snackbar("Error", "An error occurred: $e");
+      }
     }
   }
 

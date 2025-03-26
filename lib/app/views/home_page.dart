@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 import '../constants.dart';
+import '../services/connectivity_service.dart';
 import 'dashboard/dashboard_page.dart';
 import 'devices/devices_page.dart';
 import 'map/map_page.dart';
@@ -22,9 +24,9 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this); // Updated to 5
+    _tabController = TabController(length: 5, vsync: this);
     _tabController.addListener(() {
-      setState(() {}); // Trigger UI update when tab changes
+      setState(() {});
     });
   }
 
@@ -49,7 +51,7 @@ class _HomePageState extends State<HomePage>
                 spreadRadius: 5,
                 blurRadius: 20,
                 blurStyle: BlurStyle.normal,
-              )
+              ),
             ],
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
@@ -73,17 +75,21 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
               Transform.translate(
-                offset:
-                    const Offset(0, -10), // Move the entire container upwards
+                offset: const Offset(
+                  0,
+                  -10,
+                ), // Move the entire container upwards
                 child: Container(
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
                     border: Border.all(
-                        color: _tabController.index == 2
-                            ? primaryColr
-                            : Colors.white,
-                        width: 1.5),
+                      color:
+                          _tabController.index == 2
+                              ? primaryColr
+                              : Colors.white,
+                      width: 1.5,
+                    ),
                     shape: BoxShape.circle,
                     color:
                         _tabController.index == 2 ? Colors.white : primaryColr,
@@ -100,9 +106,10 @@ class _HomePageState extends State<HomePage>
                   child: Center(
                     child: Icon(
                       Icons.map_outlined, // Map icon
-                      color: _tabController.index == 2
-                          ? primaryColr
-                          : Colors.white, // Dynamic icon color
+                      color:
+                          _tabController.index == 2
+                              ? primaryColr
+                              : Colors.white, // Dynamic icon color
                       size: 28, // Icon size
                     ),
                   ),

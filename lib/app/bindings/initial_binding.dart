@@ -11,10 +11,10 @@ class InitialBinding extends Bindings {
   void dependencies() {
     print("InitialBinding executed");
     Get.put<AuthController>(AuthController());
-    Get.put<DeviceController>(DeviceController());
-    Get.put<UserController>(UserController());
+    Get.lazyPut<DeviceController>(() => DeviceController());
+    Get.lazyPut<UserController>(() => UserController());
+    Get.lazyPut<MapApiController>(() => MapApiController());
     Get.put<PermissionManager>(PermissionManager());
-    Get.put<UserController>(UserController());
-    Get.put<MapApiController>(MapApiController());
+    // Get.put<MapApiController>(MapApiController());
   }
 }

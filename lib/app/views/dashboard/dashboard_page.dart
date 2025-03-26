@@ -11,8 +11,8 @@ class DashboardPage extends StatelessWidget {
   final TabController tabController;
   DashboardPage({super.key, required this.tabController});
 
-  final DeviceController deviceController = Get.find();
-  final UserController userController = Get.find();
+  final DeviceController deviceController = Get.put(DeviceController());
+  final UserController userController = Get.put(UserController());
 
   final RxList<bool> cardVisibility = [false, false, false, false, false].obs;
 
